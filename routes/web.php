@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Auth\CustomerAuthController;
 use App\Http\Controllers\CustomersController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\OrderConfirmationsController;
@@ -13,6 +14,19 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 Auth::routes(['register' => false]);
+
+Route::middleware('guest:customer')->controller(CustomerAuthController::class)->group(function (): void {
+    Route::view('/register', 'auth.register')->name('customer.register');
+    Route::post('/register', 'register')->middleware('throttle:10,1')->name('customer.register.store');
+    Route::view('/customer/login', 'auth.customer-login')->name('customer.login');
+    Route::post('/customer/login', 'login')->middleware('throttle:10,1')->name('customer.login.store');
+});
+
+Route::middleware('auth:customer')->group(function (): void {
+    Route::view('/customer/account', 'auth.customer-account')->name('customer.account');
+    Route::post('/customer/logout', [CustomerAuthController::class, 'logout'])->name('customer.logout');
+});
+
 // Route::get('/', WelcomeController::class)->name('welcome');
 Route::get('/', HomeController::class)->name('home');
 

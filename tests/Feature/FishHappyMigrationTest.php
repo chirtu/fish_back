@@ -112,7 +112,6 @@ class FishHappyMigrationTest extends TestCase
         ])->assertOk();
 
         $this->get('/login')->assertOk()->assertSee('password');
-        $this->get('/register')->assertNotFound();
         $admin = User::factory()->create();
         $this->post('/login', ['email' => $admin->email, 'password' => 'password'])->assertRedirect('/home');
         $this->get('/home')->assertOk()->assertViewIs('home');

@@ -40,6 +40,7 @@ return [
 
     'guards' => [
         'api' => ['driver' => 'passport', 'provider' => 'customers'],
+        'customer' => ['driver' => 'session', 'provider' => 'customers'],
         'web' => [
             'driver' => 'session',
             'provider' => 'users',
