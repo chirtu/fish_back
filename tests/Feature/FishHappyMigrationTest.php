@@ -11,10 +11,12 @@ use App\Models\Region;
 use App\Models\User;
 use App\Models\Ward;
 use App\Notifications\CustomerPasswordCode;
+use Database\Seeders\TanzaniaLocationsSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Notification;
 use Laravel\Passport\ClientRepository;
+use Laravel\Passport\Passport;
 use Tests\TestCase;
 
 class FishHappyMigrationTest extends TestCase
@@ -116,5 +118,42 @@ class FishHappyMigrationTest extends TestCase
         $this->post('/login', ['email' => $admin->email, 'password' => 'password'])->assertRedirect('/home');
         $this->get('/home')->assertOk()->assertViewIs('home');
         $this->get('/products')->assertOk()->assertViewIs('products.index');
+    }
+
+    public function test_customer_can_place_an_order_with_a_local_delivery_address(): void
+    {
+        config(['services.napa.url' => null, 'services.napa.key' => null]);
+        $this->seed(TanzaniaLocationsSeeder::class);
+        $this->seed(TanzaniaLocationsSeeder::class);
+        $this->assertDatabaseCount('regions', 31);
+        $this->assertDatabaseCount('districts', 150);
+        $this->assertDatabaseCount('wards', 4344);
+
+        $customer = Customer::create(['name' => 'Delivery Customer', 'email' => 'delivery@example.com',
+            'phone' => '0712345678', 'password' => 'Password123']);
+        Passport::actingAs($customer);
+
+        $region = $this->getJson('/api/v1/regions')->assertOk()->json('0.id');
+        $district = $this->getJson('/api/v1/districts/'.$region)->assertOk()->json('0.id');
+        $ward = $this->getJson('/api/v1/councils/'.$district)->assertOk()->json('0.id');
+        $address = $this->postJson('/api/v1/create_shipping', [
+            'napa_ward_id' => $ward,
+            'street_name' => 'Market Street',
+            'street_road_name' => 'Station Road',
+            'number' => 'Blue gate',
+            'contact_name' => $customer->name,
+            'phone_number' => $customer->phone,
+        ])->assertOk()->assertJsonPath('address.number', 'Blue gate')->json('address.id');
+
+        $category = ProductCategory::create(['name' => 'Fish']);
+        $product = Product::create(['name' => 'Kingfish', 'price' => 2500, 'category_id' => $category->id]);
+        $order = $this->postJson('/api/cstmr/orders', [
+            'shipping_id' => $address,
+            'products' => [['id' => $product->id, 'quantity' => 1]],
+        ])->assertOk()->assertJsonPath('shipping_id', $address)->json('id');
+
+        $this->actingAs(User::factory()->create(['role' => User::ROLE_ADMIN]), 'web')
+            ->get(route('orders.index', ['order' => $order]))
+            ->assertOk()->assertSee('Blue gate, Station Road, Market Street');
     }
 }

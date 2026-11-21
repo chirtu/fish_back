@@ -27,7 +27,7 @@
         <div class="admin-table-wrap">
             <table class="admin-table">
                 <thead>
-                    <tr><th scope="col">#</th><th scope="col">Order</th><th scope="col">Customer</th><th scope="col">Products</th><th scope="col">Status</th><th scope="col">Placed</th><th scope="col">Update status</th></tr>
+                    <tr><th scope="col">#</th><th scope="col">Order</th><th scope="col">Customer</th><th scope="col">Products</th><th scope="col">Status</th><th scope="col">Delivery address</th><th scope="col">Placed</th><th scope="col">Update status</th></tr>
                 </thead>
                 <tbody>
                     @forelse($orders as $order)
@@ -46,6 +46,14 @@
                                 @endif
                             </td>
                             <td><span class="admin-status" data-status="{{ $order->status }}">{{ ucfirst($order->status) }}</span></td>
+                            <td>
+                                @if($address = $order->shippingAddress)
+                                    <div>{{ $address->contact_name }} · {{ $address->phone_number }}</div>
+                                    <div>{{ implode(', ', array_filter([$address->number, $address->streetRoad?->name, $address->street?->name, $address->ward?->name, $address->district?->name, $address->region?->name])) }}</div>
+                                @else
+                                    —
+                                @endif
+                            </td>
                             <td>{{ $order->created_at?->format('d M Y, H:i') ?? '—' }}</td>
                             <td>
                                 <details>
@@ -63,7 +71,7 @@
                             </td>
                         </tr>
                     @empty
-                        <tr><td colspan="7" class="admin-empty">No orders match this view.</td></tr>
+                        <tr><td colspan="8" class="admin-empty">No orders match this view.</td></tr>
                     @endforelse
                 </tbody>
             </table>

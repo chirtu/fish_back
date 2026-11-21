@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Models\Address;
+use App\Models\District;
+use App\Models\Region;
 use App\Models\Street;
 use App\Models\StreetRoad;
 use App\Models\Ward;
@@ -16,16 +18,38 @@ class AddressesController
 {
     public function getRegions(): JsonResponse
     {
+        if (! config('services.napa.url') || ! config('services.napa.key')) {
+            $regions = Region::where('napa_region_id', 'like', 'tz-nbs-%')
+                ->orderBy('name')->toBase()->get(['napa_region_id as id', 'name']);
+            abort_if($regions->isEmpty(), 503, 'Delivery locations have not been imported yet.');
+
+            return response()->json($regions);
+        }
+
         return $this->locations('regions');
     }
 
     public function getDistricts(string $id): JsonResponse
     {
+        if (str_starts_with($id, 'tz-nbs-')) {
+            $region = Region::where('napa_region_id', $id)->firstOrFail();
+
+            return response()->json(District::where('region_id', $region->id)
+                ->orderBy('name')->toBase()->get(['napa_district_id as id', 'name']));
+        }
+
         return $this->locations('districts/'.rawurlencode($id));
     }
 
     public function getCouncils(string $id): JsonResponse
     {
+        if (str_starts_with($id, 'tz-nbs-')) {
+            $district = District::where('napa_district_id', $id)->firstOrFail();
+
+            return response()->json(Ward::where('district_id', $district->id)
+                ->orderBy('name')->toBase()->get(['napa_ward_id as id', 'name']));
+        }
+
         return $this->locations('skip_councils/'.rawurlencode($id));
     }
 
@@ -65,6 +89,21 @@ class AddressesController
 
     public function createShipping(Request $request): JsonResponse
     {
+        $wardCode = $request->input('napa_ward_id');
+        if (is_string($wardCode) && str_starts_with($wardCode, 'tz-nbs-')) {
+            $manual = $request->validate([
+                'napa_ward_id' => ['required', 'string', 'exists:wards,napa_ward_id'],
+                'street_name' => ['required', 'string', 'max:255'],
+                'street_road_name' => ['required', 'string', 'max:255'],
+                'number' => ['required', 'string', 'max:100'],
+            ]);
+            $streetKey = hash('sha256', $manual['napa_ward_id'].'|'.mb_strtolower($manual['street_name']));
+            $request->merge([
+                'napa_street_id' => 'manual-'.$streetKey,
+                'napa_street_road_id' => 'manual-'.hash('sha256', $streetKey.'|'.mb_strtolower($manual['street_road_name'])),
+            ]);
+        }
+
         $data = $request->validate([
             'napa_ward_id' => ['required', 'exists:wards,napa_ward_id'],
             'napa_street_id' => ['required', 'string', 'max:100'],

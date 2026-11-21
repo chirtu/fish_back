@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Address extends Model
 {
@@ -26,4 +27,29 @@ class Address extends Model
         'street_road_id',
         'isDefault',
     ];
+
+    public function region(): BelongsTo
+    {
+        return $this->belongsTo(Region::class);
+    }
+
+    public function district(): BelongsTo
+    {
+        return $this->belongsTo(District::class);
+    }
+
+    public function ward(): BelongsTo
+    {
+        return $this->belongsTo(Ward::class);
+    }
+
+    public function street(): BelongsTo
+    {
+        return $this->belongsTo(Street::class);
+    }
+
+    public function streetRoad(): BelongsTo
+    {
+        return $this->belongsTo(StreetRoad::class);
+    }
 }

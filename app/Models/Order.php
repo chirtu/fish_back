@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /** @mixin \Eloquent */
 class Order extends Model
@@ -20,6 +21,11 @@ class Order extends Model
     public function products()
     {
         return $this->belongsToMany(Product::class, 'order_items')->withPivot('quantity');
+    }
+
+    public function shippingAddress(): BelongsTo
+    {
+        return $this->belongsTo(Address::class, 'shipping_id');
     }
 
     public function customer()

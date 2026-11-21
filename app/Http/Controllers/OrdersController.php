@@ -31,7 +31,11 @@ class OrdersController extends Controller
             'order' => ['nullable', 'integer', 'min:1'],
             'status' => ['nullable', Rule::in(array_keys(self::STATUSES))],
         ]);
-        $orders = Order::with(['customer:id,name,phone', 'products'])
+        $orders = Order::with([
+            'customer:id,name,phone', 'products',
+            'shippingAddress.region', 'shippingAddress.district', 'shippingAddress.ward',
+            'shippingAddress.street', 'shippingAddress.streetRoad',
+        ])
             ->when($filters['order'] ?? null, fn ($query, $id) => $query->whereKey($id))
             ->when($filters['status'] ?? null, fn ($query, $status) => $query->where('status', $status))
             ->latest('id')
