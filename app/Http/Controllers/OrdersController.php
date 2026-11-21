@@ -6,6 +6,8 @@ use App\Helper\FirebaseHelper;
 use App\Models\Customer;
 use App\Models\Order;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
+use Illuminate\View\View;
 
 class OrdersController extends Controller
 {
@@ -16,11 +18,27 @@ class OrdersController extends Controller
         $this->middleware('auth');
     }
 
-    public function index()
+    private const STATUSES = [
+        'pending' => 'Pending',
+        'confirmed' => 'Confirmed',
+        'completed' => 'Completed',
+        'cancelled' => 'Cancelled',
+    ];
+
+    public function index(Request $request): View
     {
-        return view('orders.index', [
-            'orders' => Order::latest()->paginate(),
+        $filters = $request->validate([
+            'order' => ['nullable', 'integer', 'min:1'],
+            'status' => ['nullable', Rule::in(array_keys(self::STATUSES))],
         ]);
+        $orders = Order::with(['customer:id,name,phone', 'products'])
+            ->when($filters['order'] ?? null, fn ($query, $id) => $query->whereKey($id))
+            ->when($filters['status'] ?? null, fn ($query, $status) => $query->where('status', $status))
+            ->latest('id')
+            ->paginate()
+            ->withQueryString();
+
+        return view('orders.index', ['orders' => $orders, 'statuses' => self::STATUSES]);
     }
 
     public function show(Order $order)
@@ -34,21 +52,26 @@ class OrdersController extends Controller
     {
         $data = $request->validate(['order' => ['required', 'integer', 'exists:orders,id']]);
         $status = $request->route('status');
-        abort_unless(in_array($status, ['pending', 'confirmed', 'cancelled', 'completed'], true), 422);
+        abort_unless(array_key_exists($status, self::STATUSES), 422);
         $order = Order::findOrFail($data['order']);
         $order->status = $status;
+
+        if ($status === 'confirmed') {
+            $order->confirmed_at ??= now();
+        }
+
+        if ($status === 'completed') {
+            $order->delivered_at ??= now();
+        }
+
         $order->save();
 
-        $device = Customer::where('id', $order->customer_id)->select('device_id')->first();
+        $device = Customer::whereKey($order->customer_id)->value('device_id');
+        $this->pushNotification([$device], [
+            'title' => 'Order updated',
+            'body' => 'Order #'.$order->id.' is now '.strtolower(self::STATUSES[$status]).'.',
+        ]);
 
-        // UPDATE ORDER'S STASTUS NOTIFICATION
-        $payload = [];
-        $payload['title'] = 'Order Placed Successfully';
-        $payload['message'] = 'You can drop any message here';
-        $payload['body'] = 'Your order is being '.$request->status.' You will here from us shortly';
-
-        $this->pushNotification([$device->device_id], $payload);
-
-        return redirect()->route('orders.index');
+        return redirect()->route('orders.index', ['order' => $order->id])->with('status', 'Order status updated.');
     }
 }

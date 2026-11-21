@@ -14,7 +14,7 @@ class PaymentsController extends Controller
     public function index()
     {
         return view('payments.index', [
-            'payments' => Payment::latest()->paginate(),
+            'payments' => Payment::with('customer:id,name')->latest('id')->paginate(),
         ]);
     }
 

@@ -1,43 +1,34 @@
 @extends('layouts.app')
 
-@section('content')
-    <div class="bg-white shadow rounded">
-        <div class="border-b border-gray-200">
-            <h2 class="px-6 py-5 font-medium text-gray-700">Payments</h2>
-        </div>
+@section('title', 'Payments')
 
-        <div class="text-sm mb-12">
-            <table class="w-full">
+@section('content')
+    <div class="admin-heading"><h1>Payments</h1></div>
+
+    <section class="admin-panel" aria-label="Customer payments">
+        <div class="admin-table-wrap">
+            <table class="admin-table">
                 <thead>
-                <tr>
-                    <th class="py-3 px-4 text-left text-sm text-gray-500 font-medium bg-gray-100 border-b border-gray-200">Customer</th>
-                    <th class="py-3 px-4 text-left text-sm text-gray-500 font-medium bg-gray-100 border-b border-gray-200">Product</th>
-                    <th class="py-3 px-4 text-left text-sm text-gray-500 font-medium bg-gray-100 border-b border-gray-200">Price</th>
-                    <th class="py-3 px-4 text-left text-sm text-gray-500 font-medium bg-gray-100 border-b border-gray-200">Quantity</th>
-                    <th class="py-3 px-4 text-left text-sm text-gray-500 font-medium bg-gray-100 border-b border-gray-200">Total amount</th>
-                    <th class="py-3 px-4 text-left text-sm text-gray-500 font-medium bg-gray-100 border-b border-gray-200">Status</th>
-                    <th class="py-3 px-4 text-left text-sm text-gray-500 font-medium bg-gray-100 border-b border-gray-200">Time</th>
-                    <th class="py-3 px-4 text-left text-sm text-gray-500 font-medium bg-gray-100 border-b border-gray-200"></th>
-                </tr>
+                    <tr><th scope="col">Order</th><th scope="col">Customer</th><th scope="col">Transaction</th><th scope="col">Amount</th><th scope="col">Status</th><th scope="col">Date</th></tr>
                 </thead>
                 <tbody>
-                @foreach(range(1, 15) as $customer)
-                    <tr>
-                        <td class="text-left text-sm text-gray-700 py-4 px-4 border-b border-gray-200">David Pella</td>
-                        <td class="text-left text-sm text-gray-700 py-4 px-4 border-b border-gray-200">Kibua</td>
-                        <td class="text-left text-sm text-gray-700 py-4 px-4 border-b border-gray-200">7500.00</td>
-                        <td class="text-left text-sm text-gray-700 py-4 px-4 border-b border-gray-200">4KG</td>
-                        <td class="text-left text-sm text-gray-700 py-4 px-4 border-b border-gray-200">
-                            <span class="text-gray-800 font-medium">30,000.00</span>
-                        </td>
-                        <td class="text-left text-sm text-gray-700 py-4 px-4 border-b border-gray-200">Paid</td>
-                        <td class="text-left text-sm text-gray-700 py-4 px-4 border-b border-gray-200">
-                            <a href="#" class="text-sm font-medium text-purple-500">View</a>
-                        </td>
-                    </tr>
-                @endforeach
+                    @forelse($payments as $payment)
+                        <tr>
+                            <td><a href="{{ route('orders.index', ['order' => $payment->order_id]) }}">#{{ $payment->order_id }}</a></td>
+                            <td><a href="{{ route('customers.show', $payment->customer_id) }}">{{ $payment->customer->name }}</a></td>
+                            <td>{{ $payment->transaction_id ?? $payment->tracking_id ?? '—' }}</td>
+                            <td>{{ $payment->amount === null ? '—' : 'TZS '.number_format($payment->amount, 2) }}</td>
+                            <td><span class="admin-status" data-status="{{ strtolower($payment->status ?? 'pending') }}">{{ ucfirst(strtolower($payment->status ?? 'pending')) }}</span></td>
+                            <td>{{ $payment->created_at?->format('d M Y, H:i') ?? '—' }}</td>
+                        </tr>
+                    @empty
+                        <tr><td colspan="6" class="admin-empty">Customer payments will appear here.</td></tr>
+                    @endforelse
                 </tbody>
             </table>
         </div>
-    </div>
+        @if($payments->hasPages())
+            <div class="admin-pagination">{{ $payments->links() }}</div>
+        @endif
+    </section>
 @endsection

@@ -1,0 +1,82 @@
+.admin-shell {
+    min-height: 100vh;
+    background: #f3f7f6;
+    color: #142c35;
+}
+.admin-wrap { max-width: 78rem; margin-inline: auto; padding-inline: clamp(1rem, 4vw, 2.5rem); }
+.admin-header { background: #102d40; color: #fff; }
+.admin-header-inner { display: flex; align-items: center; gap: 1rem 2rem; flex-wrap: wrap; padding-block: 1rem; }
+.admin-brand { font-size: 1.125rem; font-weight: 750; white-space: nowrap; }
+.admin-nav { display: flex; flex: 1; align-items: center; flex-wrap: wrap; gap: .25rem; }
+.admin-nav a, .admin-signout {
+    display: inline-flex;
+    padding: .5rem .75rem;
+    border-radius: .65rem;
+    color: #d8e7ec;
+    font-size: .875rem;
+    font-weight: 600;
+}
+.admin-nav a:hover, .admin-nav [aria-current="page"], .admin-signout:hover { background: #25495a; color: #fff; }
+.admin-main { padding-block: clamp(1.5rem, 5vw, 3.5rem); }
+.admin-heading, .admin-panel-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: .75rem 1rem;
+}
+.admin-heading { margin-bottom: 1.25rem; }
+.admin-heading h1 { font-size: clamp(1.65rem, 4vw, 2.5rem); font-weight: 750; line-height: 1.14; letter-spacing: -.035em; }
+.admin-button {
+    display: inline-flex;
+    align-items: center;
+    padding: .65rem 1rem;
+    border-radius: .7rem;
+    background: #006b64;
+    color: #fff;
+    font-size: .875rem;
+    font-weight: 650;
+}
+.admin-button:hover { background: #00564f; }
+.admin-metrics {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr));
+    gap: .875rem;
+    margin-bottom: 1.5rem;
+}
+.admin-metric, .admin-panel { border: 1px solid #d6e3df; border-radius: 1rem; background: #fff; }
+.admin-metric { display: grid; gap: .8rem; min-height: 7rem; padding: 1rem; }
+.admin-metric:hover { border-color: #008074; }
+.admin-metric span { color: #466166; font-size: .875rem; font-weight: 650; }
+.admin-metric strong { font-size: clamp(1.2rem, 2.1vw, 1.75rem); line-height: 1.1; overflow-wrap: anywhere; font-variant-numeric: tabular-nums; }
+.admin-metric strong small { font-size: .7em; }
+.admin-metric-priority { background: #ddf3ee; border-color: #a7d6cd; }
+.admin-panel-heading { padding: 1rem; }
+.admin-panel-heading h2 { font-size: 1.125rem; font-weight: 700; }
+.admin-panel-heading a, .admin-table a, .admin-notice a { color: #006159; font-weight: 650; text-underline-offset: .2em; }
+.admin-panel-heading a:hover, .admin-table a:hover, .admin-notice a:hover { text-decoration: underline; }
+.admin-table-wrap { overflow-x: auto; border-radius: inherit; }
+.admin-table { width: 100%; border-collapse: collapse; text-align: left; font-size: .875rem; }
+.admin-table th, .admin-table td { padding: .8rem 1rem; vertical-align: top; }
+.admin-table th { background: #eaf2f0; color: #344f56; font-weight: 650; white-space: nowrap; }
+.admin-table td { border-top: 1px solid #e0ebe8; }
+.admin-table tr:hover td { background: #f8fbfa; }
+.admin-table td.admin-empty { padding: 2.25rem 1rem; text-align: center; color: #466166; }
+.admin-status { display: inline-block; padding: .2rem .55rem; border-radius: 999px; color: #435059; background: #edf2f4; font-size: .775rem; font-weight: 650; }
+.admin-status[data-status="pending"] { color: #634009; background: #fff0cc; }
+.admin-status[data-status="completed"], .admin-status[data-status="confirmed"] { color: #00534a; background: #dcf4eb; }
+.admin-status[data-status="cancelled"], .admin-status[data-status="failed"], .admin-status[data-status="reversed"] { color: #892b35; background: #fce8ea; }
+.admin-inline-form { display: flex; align-items: center; flex-wrap: wrap; gap: .55rem; }
+.admin-inline-form select { border: 1px solid #a9c1bb; border-radius: .6rem; background: #fff; padding: .55rem; }
+.admin-notice { margin-bottom: 1rem; padding: .75rem 1rem; border-radius: .65rem; background: #ddf3ee; }
+.admin-pagination { padding: 1rem; }
+.admin-table summary { cursor: pointer; white-space: nowrap; }
+.admin-status-form button { padding: .3rem .5rem; margin-top: .25rem; border-radius: .4rem; background: #eaf2f0; }
+.admin-status-form button:hover { background: #d5e9e4; }
+.admin-shell :focus-visible { outline: 2px solid #07857a; outline-offset: 3px; }
+.admin-header :focus-visible { outline-color: #a4f5e6; }
+
+@media (max-width: 44rem) {
+    .admin-nav { flex-basis: 100%; order: 1; }
+    .admin-header-inner > form { margin-left: auto; }
+}

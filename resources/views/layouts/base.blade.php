@@ -16,6 +16,7 @@
         <link rel="stylesheet" href="{{ mix('css/app.css') }}">
         <!-- Styles -->
         @livewireStyles
+        @stack('styles')
         <!-- CSRF Token -->
         <meta name="csrf-token" content="{{ csrf_token() }}">
     </head>
