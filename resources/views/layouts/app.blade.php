@@ -16,6 +16,7 @@
                         ['products.index', 'products.*', 'Products'],
                         ['productCategories.index', 'productCategories.*', 'Categories'],
                         ['customers.index', 'customers.*', 'Customers'],
+                        ['users.index', 'users.*', 'Users'],
                         ['payments.index', 'payments.*', 'Payments'],
                     ] as [$route, $pattern, $label])
                         <a href="{{ route($route) }}" @if(request()->routeIs($pattern)) aria-current="page" @endif>{{ $label }}</a>

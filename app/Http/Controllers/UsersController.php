@@ -22,7 +22,9 @@ class UsersController extends Controller
 
     public function store(UserStoreRequest $request)
     {
-        $user = User::create($request->validated());
+        $user = new User($request->safe()->only(['name', 'email', 'password']));
+        $user->role = $request->validated('role', User::ROLE_USER);
+        $user->save();
 
         $request->session()->flash('user.name', $user->name);
 

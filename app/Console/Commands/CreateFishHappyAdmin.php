@@ -32,7 +32,9 @@ class CreateFishHappyAdmin extends Command
             return self::FAILURE;
         }
 
-        User::create($validator->validated());
+        $user = new User($validator->validated());
+        $user->role = User::ROLE_ADMIN;
+        $user->save();
         $this->info('Admin account created.');
 
         return self::SUCCESS;

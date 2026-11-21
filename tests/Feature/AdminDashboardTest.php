@@ -45,7 +45,7 @@ class AdminDashboardTest extends TestCase
 
         $this->actingAs($customer, 'customer')->get('/home')->assertRedirect(route('login'));
 
-        $this->actingAs(User::factory()->create(), 'web');
+        $this->actingAs(User::factory()->create(['role' => User::ROLE_ADMIN]), 'web');
         $this->get('/home')->assertOk()
             ->assertViewHasAll([
                 'orderCount' => 2,
@@ -67,5 +67,42 @@ class AdminDashboardTest extends TestCase
         $this->assertNotNull($pending->confirmed_at);
 
         $this->get(route('payments.index'))->assertOk()->assertSee('payment-completed');
+    }
+
+    public function test_only_admin_role_can_log_in_and_access_management_routes(): void
+    {
+        $user = User::factory()->create()->refresh();
+        $this->assertSame(User::ROLE_USER, $user->role);
+
+        $this->from('/login')->post('/login', ['email' => $user->email, 'password' => 'password'])
+            ->assertRedirect('/login')
+            ->assertSessionHasErrors('email');
+        $this->assertGuest('web');
+
+        $this->actingAs($user, 'web')->get('/home')->assertForbidden();
+        $this->get('/products')->assertForbidden();
+        $this->post('/users', ['role' => 'admin'])->assertForbidden();
+        $this->assertDatabaseCount('users', 1);
+    }
+
+    public function test_admin_can_create_users_with_valid_roles_from_the_dashboard(): void
+    {
+        $this->actingAs(User::factory()->create(['role' => User::ROLE_ADMIN]), 'web');
+        $details = [
+            'name' => 'Second admin',
+            'email' => 'second-admin@example.com',
+            'password' => 'example-password',
+        ];
+
+        $this->get('/users')->assertOk()->assertSee('Add user');
+        $this->from('/users')->post('/users', $details + ['role' => 'unknown'])
+            ->assertRedirect('/users')
+            ->assertSessionHasErrors('role');
+
+        $this->post('/users', $details + ['role' => User::ROLE_ADMIN])->assertRedirect('/users');
+        $this->assertDatabaseHas('users', ['email' => $details['email'], 'role' => User::ROLE_ADMIN]);
+
+        $this->post('/users', [...$details, 'email' => 'ordinary@example.com'])->assertRedirect('/users');
+        $this->assertDatabaseHas('users', ['email' => 'ordinary@example.com', 'role' => User::ROLE_USER]);
     }
 }

@@ -3,7 +3,11 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
+use Illuminate\Contracts\Auth\StatefulGuard;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class LoginController extends Controller
 {
@@ -34,6 +38,16 @@ class LoginController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('guest')->except('logout');
+        $this->middleware('guest:web')->except('logout');
+    }
+
+    protected function credentials(Request $request): array
+    {
+        return $request->only($this->username(), 'password') + ['role' => User::ROLE_ADMIN];
+    }
+
+    protected function guard(): StatefulGuard
+    {
+        return Auth::guard('web');
     }
 }
