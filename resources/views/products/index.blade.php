@@ -27,7 +27,11 @@
                     @foreach($products as $product)
                     <tr>
                         <td class="text-left text-sm text-gray-700 py-4 px-4 border-b border-gray-100  ">
-                            <img src="{{ asset('storage/'.$product->imageUrl) }}" class="h-8" alt="Example Image">
+                            @if($product->imageUrl)
+                                <img src="{{ asset($product->imageUrl) }}" class="h-8" alt="{{ $product->name }}">
+                            @else
+                                <span class="text-gray-500">No image</span>
+                            @endif
                         </td>
                         <td class="text-left text-sm text-gray-700 py-4 px-4 border-b border-gray-100">
                             {{ $product->name }}
