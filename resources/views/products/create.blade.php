@@ -58,6 +58,8 @@
                                 type="number"
                                 name="weight"
                                 id="weight"
+                                step="0.01"
+                                inputmode="decimal"
                                 class="form-input w-full text-sm border-0"
                                 placeholder="0.00"
                             />
