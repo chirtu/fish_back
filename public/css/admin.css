@@ -80,3 +80,18 @@
     .admin-nav { flex-basis: 100%; order: 1; }
     .admin-header-inner > form { margin-left: auto; }
 }
+
+[data-product-photo] { display: inline-block; cursor: zoom-in; }
+.product-photo-dialog {
+    position: fixed;
+    inset: 0;
+    margin: auto;
+    width: min(90vw, 48rem);
+    max-height: 90vh;
+    overflow: auto;
+    border: 0;
+    border-radius: 1rem;
+    background: #fff;
+}
+.product-photo-dialog::backdrop { background: rgb(16 45 64 / .72); }
+.product-photo-dialog img { display: block; width: 100%; max-height: 72vh; object-fit: contain; }

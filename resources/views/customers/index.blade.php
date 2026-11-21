@@ -10,7 +10,8 @@
             <table class="w-full">
                 <thead>
                     <tr>
-                        <th class="py-3 px-4 text-left text-sm text-gray-500 font-medium bg-gray-50 border-b border-gray-100">Name</th>
+                        <th class="py-3 px-4 text-left text-sm text-gray-500 font-medium bg-gray-50 border-b border-gray-100" scope="col">#</th>
+                    <th class="py-3 px-4 text-left text-sm text-gray-500 font-medium bg-gray-50 border-b border-gray-100">Name</th>
                         <th class="py-3 px-4 text-left text-sm text-gray-500 font-medium bg-gray-50 border-b border-gray-100">Email</th>
                         <th class="py-3 px-4 text-left text-sm text-gray-500 font-medium bg-gray-50 border-b border-gray-100">Phone</th>
                         <th class="py-3 px-4 text-left text-sm text-gray-500 font-medium bg-gray-50 border-b border-gray-100">Orders</th>
@@ -20,6 +21,7 @@
                 <tbody>
                     @foreach($customers as $customer)
                     <tr>
+                        <td class="py-4 px-4 border-b border-gray-100">{{ $customers->firstItem() + $loop->index }}</td>
                         <td class="text-left text-sm text-gray-700 py-4 px-4 border-b border-gray-100">{{ $customer->name }}</td>
                         <td class="text-left text-sm text-gray-700 py-4 px-4 border-b border-gray-100">{{ $customer->email }}</td>
                         <td class="text-left text-sm text-gray-700 py-4 px-4 border-b border-gray-100">{{ $customer->phone }}</td>
@@ -31,6 +33,9 @@
                     @endforeach
                 </tbody>
             </table>
+            @if($customers->hasPages())
+                <div class="admin-pagination">{{ $customers->links() }}</div>
+            @endif
         </div>
     </div>
 @endsection

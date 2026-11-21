@@ -39,11 +39,12 @@
         <div class="admin-table-wrap">
             <table class="admin-table" aria-labelledby="recent-orders">
                 <thead>
-                    <tr><th scope="col">Order</th><th scope="col">Customer</th><th scope="col">Products</th><th scope="col">Status</th><th scope="col">Placed</th></tr>
+                    <tr><th scope="col">#</th><th scope="col">Order</th><th scope="col">Customer</th><th scope="col">Products</th><th scope="col">Status</th><th scope="col">Placed</th></tr>
                 </thead>
                 <tbody>
                     @forelse($orders as $order)
                         <tr>
+                            <td>{{ $loop->iteration }}</td>
                             <td><a href="{{ route('orders.index', ['order' => $order->id]) }}">#{{ $order->id }}</a></td>
                             <td><a href="{{ route('customers.show', $order->customer_id) }}">{{ $order->customer->name }}</a></td>
                             <td>{{ number_format($order->products_count) }}</td>
@@ -51,7 +52,7 @@
                             <td>{{ $order->created_at?->format('d M Y, H:i') ?? '—' }}</td>
                         </tr>
                     @empty
-                        <tr><td colspan="5" class="admin-empty">Customer orders will appear here.</td></tr>
+                        <tr><td colspan="6" class="admin-empty">Customer orders will appear here.</td></tr>
                     @endforelse
                 </tbody>
             </table>

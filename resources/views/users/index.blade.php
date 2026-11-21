@@ -49,18 +49,19 @@
         <div class="admin-table-wrap">
             <table class="admin-table">
                 <thead>
-                    <tr><th scope="col">Name</th><th scope="col">Email</th><th scope="col">Role</th><th scope="col">Created</th></tr>
+                    <tr><th scope="col">#</th><th scope="col">Name</th><th scope="col">Email</th><th scope="col">Role</th><th scope="col">Created</th></tr>
                 </thead>
                 <tbody>
                     @forelse($users as $user)
                         <tr>
+                            <td>{{ $users->firstItem() + $loop->index }}</td>
                             <td>{{ $user->name }}</td>
                             <td>{{ $user->email }}</td>
                             <td><span class="admin-status">{{ ucfirst($user->role) }}</span></td>
                             <td>{{ $user->created_at?->format('d M Y') ?? '—' }}</td>
                         </tr>
                     @empty
-                        <tr><td colspan="4" class="admin-empty">No users yet.</td></tr>
+                        <tr><td colspan="5" class="admin-empty">No users yet.</td></tr>
                     @endforelse
                 </tbody>
             </table>

@@ -100,6 +100,7 @@
             <table class="w-full">
                 <thead>
                 <tr>
+                    <th class="py-3 px-4 text-left text-sm text-gray-500 font-medium bg-gray-50 border-b border-gray-100" scope="col">#</th>
                     <th class="py-3 px-4 text-left text-sm text-gray-500 font-medium bg-gray-50 border-b border-gray-100">Name</th>
                     <th class="py-3 px-4 text-right text-sm text-gray-500 font-medium bg-gray-50 border-b border-gray-100"></th>
                 </tr>
@@ -107,6 +108,7 @@
                 <tbody>
                     @foreach($categories as $category)
                     <tr>
+                        <td class="py-4 px-4 border-b border-gray-100">{{ $categories->firstItem() + $loop->index }}</td>
                         <td class="text-left text-sm text-gray-700 py-4 px-4 border-b border-gray-100">
                             {{ $category->name }}
                         </td>
@@ -117,6 +119,9 @@
                     @endforeach
                 </tbody>
             </table>
+            @if($categories->hasPages())
+                <div class="admin-pagination">{{ $categories->links() }}</div>
+            @endif
         </div>
     </div>
 @endsection

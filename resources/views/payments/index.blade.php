@@ -9,11 +9,12 @@
         <div class="admin-table-wrap">
             <table class="admin-table">
                 <thead>
-                    <tr><th scope="col">Order</th><th scope="col">Customer</th><th scope="col">Transaction</th><th scope="col">Amount</th><th scope="col">Status</th><th scope="col">Date</th></tr>
+                    <tr><th scope="col">#</th><th scope="col">Order</th><th scope="col">Customer</th><th scope="col">Transaction</th><th scope="col">Amount</th><th scope="col">Status</th><th scope="col">Date</th></tr>
                 </thead>
                 <tbody>
                     @forelse($payments as $payment)
                         <tr>
+                            <td>{{ $payments->firstItem() + $loop->index }}</td>
                             <td><a href="{{ route('orders.index', ['order' => $payment->order_id]) }}">#{{ $payment->order_id }}</a></td>
                             <td><a href="{{ route('customers.show', $payment->customer_id) }}">{{ $payment->customer->name }}</a></td>
                             <td>{{ $payment->transaction_id ?? $payment->tracking_id ?? '—' }}</td>
@@ -22,7 +23,7 @@
                             <td>{{ $payment->created_at?->format('d M Y, H:i') ?? '—' }}</td>
                         </tr>
                     @empty
-                        <tr><td colspan="6" class="admin-empty">Customer payments will appear here.</td></tr>
+                        <tr><td colspan="7" class="admin-empty">Customer payments will appear here.</td></tr>
                     @endforelse
                 </tbody>
             </table>

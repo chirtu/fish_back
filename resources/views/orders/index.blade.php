@@ -27,11 +27,12 @@
         <div class="admin-table-wrap">
             <table class="admin-table">
                 <thead>
-                    <tr><th scope="col">Order</th><th scope="col">Customer</th><th scope="col">Products</th><th scope="col">Status</th><th scope="col">Placed</th><th scope="col">Update status</th></tr>
+                    <tr><th scope="col">#</th><th scope="col">Order</th><th scope="col">Customer</th><th scope="col">Products</th><th scope="col">Status</th><th scope="col">Placed</th><th scope="col">Update status</th></tr>
                 </thead>
                 <tbody>
                     @forelse($orders as $order)
                         <tr>
+                            <td>{{ $orders->firstItem() + $loop->index }}</td>
                             <td>#{{ $order->id }}</td>
                             <td><a href="{{ route('customers.show', $order->customer_id) }}">{{ $order->customer->name }}</a><br>{{ $order->customer->phone }}</td>
                             <td>
@@ -62,7 +63,7 @@
                             </td>
                         </tr>
                     @empty
-                        <tr><td colspan="6" class="admin-empty">No orders match this view.</td></tr>
+                        <tr><td colspan="7" class="admin-empty">No orders match this view.</td></tr>
                     @endforelse
                 </tbody>
             </table>

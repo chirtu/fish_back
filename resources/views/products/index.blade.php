@@ -15,6 +15,7 @@
             <table class="w-full">
                 <thead>
                 <tr>
+                    <th class="py-3 px-4 text-left text-sm text-gray-500 font-medium bg-gray-50 border-b border-gray-100" scope="col">#</th>
                     <th class="py-3 px-4 text-left text-sm text-gray-500 font-medium bg-gray-50 border-b border-gray-100">Image</th>
                     <th class="py-3 px-4 text-left text-sm text-gray-500 font-medium bg-gray-50 border-b border-gray-100">Name</th>
                     <th class="py-3 px-4 text-left text-sm text-gray-500 font-medium bg-gray-50 border-b border-gray-100">Category</th>
@@ -26,9 +27,12 @@
                 <tbody>
                     @foreach($products as $product)
                     <tr>
+                        <td class="py-4 px-4 border-b border-gray-100">{{ $products->firstItem() + $loop->index }}</td>
                         <td class="text-left text-sm text-gray-700 py-4 px-4 border-b border-gray-100  ">
                             @if($product->imageUrl)
-                                <img src="{{ asset($product->imageUrl) }}" class="h-8" alt="{{ $product->name }}">
+                                <button type="button" data-product-photo aria-label="Enlarge image of {{ $product->name }}">
+                                    <img src="{{ asset($product->imageUrl) }}" class="h-8" alt="{{ $product->name }}">
+                                </button>
                             @else
                                 <span class="text-gray-500">No image</span>
                             @endif
@@ -63,10 +67,37 @@
                     @endforeach
                 </tbody>
             </table>
+            @if($products->hasPages())
+                <div class="admin-pagination">{{ $products->links() }}</div>
+            @endif
         </div>
     </div>
 
 
 
 
+    <dialog id="product-photo-dialog" class="product-photo-dialog" aria-labelledby="product-photo-title">
+        <form method="dialog" class="admin-panel-heading">
+            <h2 id="product-photo-title">Product image</h2>
+            <button type="submit" autofocus>Close</button>
+        </form>
+        <img alt="">
+    </dialog>
+
+    <script>
+        (() => {
+            const dialog = document.getElementById('product-photo-dialog');
+            const preview = dialog.querySelector('img');
+            const title = document.getElementById('product-photo-title');
+            for (const button of document.querySelectorAll('[data-product-photo]')) {
+                button.addEventListener('click', () => {
+                    const thumbnail = button.querySelector('img');
+                    preview.src = thumbnail.src;
+                    preview.alt = thumbnail.alt;
+                    title.textContent = thumbnail.alt;
+                    dialog.showModal();
+                });
+            }
+        })();
+    </script>
 @endsection
