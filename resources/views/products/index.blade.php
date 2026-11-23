@@ -11,7 +11,7 @@
             >New product</a>
         </div>
 
-        <div class="text-sm mb-12">
+        <div class="admin-table-wrap text-sm mb-12">
             <table class="w-full">
                 <thead>
                 <tr>

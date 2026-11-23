@@ -6,7 +6,7 @@
             <h2 class="px-6 py-5 font-medium text-gray-700">Customers</h2>
         </div>
 
-        <div class="text-sm mb-12">
+        <div class="admin-table-wrap text-sm mb-12">
             <table class="w-full">
                 <thead>
                     <tr>
