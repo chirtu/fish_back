@@ -24,14 +24,7 @@
     font-weight: 750;
     letter-spacing: -.025em;
 }
-.admin-nav { display: grid; gap: 1.35rem; }
-.admin-nav-group { display: grid; gap: .2rem; }
-.admin-nav-group p {
-    padding: 0 .75rem .35rem;
-    color: #acc2ce;
-    font-size: .72rem;
-    font-weight: 650;
-}
+.admin-nav { display: grid; gap: .25rem; }
 .admin-nav a, .admin-signout {
     display: block;
     width: 100%;
