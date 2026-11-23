@@ -155,5 +155,12 @@ class FishHappyMigrationTest extends TestCase
         $this->actingAs(User::factory()->create(['role' => User::ROLE_ADMIN]), 'web')
             ->get(route('orders.index', ['order' => $order]))
             ->assertOk()->assertSee('Blue gate, Station Road, Market Street');
+
+        $this->get(route('customers.index'))->assertOk()
+            ->assertSee(route('customers.show', $customer));
+        $this->get(route('customers.show', $customer))->assertOk()
+            ->assertSee($customer->email)
+            ->assertSee('Blue gate, Station Road, Market Street')
+            ->assertSee(route('orders.index', ['order' => $order]));
     }
 }

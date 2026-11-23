@@ -27,7 +27,7 @@
                         <td class="text-left text-sm text-gray-700 py-4 px-4 border-b border-gray-100">{{ $customer->phone }}</td>
                         <td class="text-left text-sm text-gray-700 py-4 px-4 border-b border-gray-100">{{ $customer->orders_count }}</td>
                         <td class="text-left text-sm text-gray-700 py-4 px-4 border-b border-gray-100">
-                            <a href="#" class="text-sm font-medium text-purple-500">View</a>
+                            <a href="{{ route('customers.show', $customer) }}" class="text-sm font-medium text-purple-500">View</a>
                         </td>
                     </tr>
                     @endforeach
