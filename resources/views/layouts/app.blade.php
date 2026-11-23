@@ -1,48 +1,68 @@
 @extends('layouts.base')
 
 @push('styles')
-    <link rel="stylesheet" href="{{ asset('css/admin.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/admin.css') }}?v={{ filemtime(public_path('css/admin.css')) }}">
 @endpush
 
 @section('body')
     <div class="admin-shell">
-        <header class="admin-sidebar">
+        <aside class="admin-sidebar">
             <div class="admin-sidebar-inner">
                 <a class="admin-brand" href="{{ route('home') }}">Fish Happy</a>
-                <button type="button" class="admin-menu-toggle" id="admin-menu-toggle"
-                        aria-controls="admin-sidebar-menu" aria-expanded="false">
-                    Menu
-                </button>
-                <div class="admin-sidebar-menu" id="admin-sidebar-menu">
-                    <nav class="admin-nav" aria-label="Admin navigation">
-                        @foreach([
-                            ['home', 'home', 'Dashboard'],
-                            ['orders.index', 'orders.*', 'Orders'],
-                            ['products.index', 'products.*', 'Products'],
-                            ['productCategories.index', 'productCategories.*', 'Categories'],
-                            ['customers.index', 'customers.*', 'Customers'],
-                            ['users.index', 'users.*', 'Users'],
-                            ['payments.index', 'payments.*', 'Payments'],
-                        ] as [$route, $pattern, $label])
-                            <a href="{{ route($route) }}" @if(request()->routeIs($pattern)) aria-current="page" @endif>{{ $label }}</a>
-                        @endforeach
-                    </nav>
-                    <form action="{{ route('logout') }}" method="POST">
-                        @csrf
-                        <button class="admin-signout" type="submit">Sign out</button>
-                    </form>
-                </div>
+                @include('layouts.admin-navigation')
             </div>
-        </header>
-        <main class="admin-wrap admin-main">
-            @yield('content')
-        </main>
+        </aside>
+
+        <div class="admin-workspace">
+            <header class="admin-topbar">
+                <div class="admin-wrap admin-topbar-inner">
+                    <button type="button" class="admin-menu-toggle" id="admin-menu-toggle"
+                            aria-controls="admin-menu" aria-expanded="false" aria-haspopup="dialog">
+                        <span class="admin-menu-icon" aria-hidden="true"></span>
+                        Menu
+                    </button>
+                    <span class="admin-workspace-label">Fish Happy Admin</span>
+                    <div class="admin-account">
+                        <span class="admin-avatar" aria-hidden="true">{{ mb_strtoupper(mb_substr(auth('web')->user()?->name ?? 'A', 0, 1)) }}</span>
+                        <span class="admin-account-name">{{ auth('web')->user()?->name }}</span>
+                    </div>
+                </div>
+            </header>
+
+            <main class="admin-wrap admin-main">
+                @yield('content')
+            </main>
+        </div>
     </div>
+
+    <dialog class="admin-drawer" id="admin-menu" aria-labelledby="admin-menu-title">
+        <div class="admin-sidebar-inner">
+            <div class="admin-drawer-heading">
+                <h2 class="admin-brand" id="admin-menu-title">Fish Happy</h2>
+                <form method="dialog">
+                    <button class="admin-drawer-close" type="submit" autofocus>Close</button>
+                </form>
+            </div>
+            @include('layouts.admin-navigation')
+        </div>
+    </dialog>
+
     <script>
         (() => {
             const toggle = document.getElementById('admin-menu-toggle');
+            const drawer = document.getElementById('admin-menu');
+            const desktop = window.matchMedia('(min-width: 48rem)');
+
             toggle.addEventListener('click', () => {
-                toggle.setAttribute('aria-expanded', toggle.getAttribute('aria-expanded') === 'false');
+                drawer.showModal();
+                toggle.setAttribute('aria-expanded', 'true');
+            });
+            drawer.addEventListener('close', () => toggle.setAttribute('aria-expanded', 'false'));
+            drawer.addEventListener('click', (event) => {
+                if (event.target === drawer) drawer.close();
+            });
+            desktop.addEventListener('change', (event) => {
+                if (event.matches && drawer.open) drawer.close();
             });
         })();
     </script>
